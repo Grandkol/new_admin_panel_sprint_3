@@ -3,7 +3,6 @@ import os
 from typing import Any
 
 
-
 import redis
 from dotenv import load_dotenv
 
@@ -157,4 +156,3 @@ class Pg_Extractor:
 
         tables = self.curs_pg.fetchall()
         return tables
-

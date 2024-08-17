@@ -3,7 +3,6 @@ import os
 
 from elasticsearch import Elasticsearch
 from elasticsearch.helpers import bulk
-from extract import State
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -26,8 +25,5 @@ class ElasticLoad:
             for doc in self.data:
                 yield {"_id": doc["id"], "_index": "movies", "_source": doc}
 
-
-
         bulk(self.client, get_doc_data())
         log.info("Загрузка в ES прошла успешно!")
-

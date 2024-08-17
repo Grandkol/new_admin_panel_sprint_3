@@ -1,16 +1,12 @@
 import logging
 import os
 import time
-from threading import Timer
 import psycopg
-import psycopg2.extras
-import redis
 from dotenv import load_dotenv
-from psycopg import ClientCursor, connection as _connection
-from psycopg import sql
+from psycopg import ClientCursor
 from psycopg.rows import dict_row
 
-from extract import Pg_Extractor, State
+from extract import Pg_Extractor
 from transform import TransformToElastic
 from load import ElasticLoad
 from backoff import backoff
@@ -52,6 +48,5 @@ if __name__ == "__main__":
         "port": os.getenv("SQL_PORT"),
     }
     pg_conn = psycopg.connect(**dsl, row_factory=dict_row, cursor_factory=ClientCursor)
-
 
     main(pg_conn=pg_conn)
