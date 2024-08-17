@@ -1,0 +1,50 @@
+version: '3'
+services:
+
+  theatre-db:
+    image: postgres:16
+    ports:
+      - 5432:5432
+    env_file:
+      - .env
+    volumes:
+      - ./database_dump.sql:/docker-entrypoint-initdb.d/init.sql
+
+  redis:
+    image: redis:latest
+    restart: always
+    ports:
+      - 6379:6379
+#    volumes:
+#      - redis:/data
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.6.2
+    restart: always
+    ports:
+      - 9200:9200
+    volumes:
+      - es:/usr/share/elasticsearch/data
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+
+  etl:
+    build: ./etl
+    restart: always
+    env_file:
+      - .env
+    ports:
+      - 3001:3001
+    depends_on:
+      - redis
+      - elasticsearch
+      - theatre-db
+
+
+
+volumes:
+  static:
+  media:
+  redis:
+  es:
