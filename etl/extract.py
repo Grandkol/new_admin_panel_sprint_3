@@ -153,6 +153,5 @@ class Pg_Extractor:
             "GROUP BY fw.id "
             "ORDER BY fw.modified; "
         )
-
         tables = self.curs_pg.fetchall()
         return tables

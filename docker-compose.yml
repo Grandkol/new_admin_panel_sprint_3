@@ -28,6 +28,11 @@ services:
     environment:
       - discovery.type=single-node
       - xpack.security.enabled=false
+    healthcheck:
+      test: curl -s http://elasticsearch:9200 >/dev/null || exit 1
+      interval: 5s
+      timeout: 3s
+      retries: 5
 
   etl:
     build: ./etl
@@ -37,9 +42,10 @@ services:
     ports:
       - 3001:3001
     depends_on:
-      - redis
-      - elasticsearch
-      - theatre-db
+      elasticsearch:
+        condition: service_healthy
+
+
 
 
 

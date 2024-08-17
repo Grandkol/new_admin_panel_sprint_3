@@ -18,25 +18,23 @@ TABLES = ["film_work", "person", "genre"]
 load_dotenv()
 
 
-@backoff()
 def start_etl(pg_conn):
-    try:
-        entry = Pg_Extractor(tables=TABLES, pg_conn=pg_conn)
-        data = entry.extraction_logic()
 
-        transform = TransformToElastic(data=data)
-        docs = transform.transform()
+    entry = Pg_Extractor(tables=TABLES, pg_conn=pg_conn)
+    data = entry.extraction_logic()
 
-        load = ElasticLoad(data=docs)
-        load.load()
-    finally:
-        pg_conn.close()
+    transform = TransformToElastic(data=data)
+    docs = transform.transform()
+
+    load = ElasticLoad(data=docs)
+    load.load()
 
 
+@backoff()
 def main(pg_conn):
     while True:
         start_etl(pg_conn=pg_conn)
-        time.sleep(10)
+        time.sleep(5)
 
 
 if __name__ == "__main__":
@@ -48,5 +46,5 @@ if __name__ == "__main__":
         "port": os.getenv("SQL_PORT"),
     }
     pg_conn = psycopg.connect(**dsl, row_factory=dict_row, cursor_factory=ClientCursor)
-
+    print('вход в иф мейн')
     main(pg_conn=pg_conn)
