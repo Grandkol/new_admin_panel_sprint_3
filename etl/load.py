@@ -1,9 +1,12 @@
 import logging
 import os
+from typing import Dict
 
+from backoff import backoff
+from dotenv import load_dotenv
 from elasticsearch import Elasticsearch
 from elasticsearch.helpers import bulk
-from dotenv import load_dotenv
+from config import settings
 
 load_dotenv()
 
@@ -13,15 +16,16 @@ log = logging.getLogger(__name__)
 class ElasticLoad:
     def __init__(self, data):
 
-        self.client = Elasticsearch(os.getenv("ELASTIC_HOST"))
+        self.client = Elasticsearch(settings.elastic_host)
         self.data = data
 
-    def load(self):
+    @backoff
+    def load(self) -> None:
         if self.data == []:
-            print("Нет Данных для загрузки")
+            log.info("Нет Данных для загрузки")
             return
 
-        def get_doc_data():
+        def get_doc_data() -> Dict:
             for doc in self.data:
                 yield {"_id": doc["id"], "_index": "movies", "_source": doc}
 

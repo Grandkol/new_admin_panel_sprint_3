@@ -1,8 +1,10 @@
+from typing import List
+
 class TransformToElastic:
     def __init__(self, data):
         self.data = data
 
-    def transform(self):
+    def transform(self) -> List:
         list = []
 
         if self.data == []:

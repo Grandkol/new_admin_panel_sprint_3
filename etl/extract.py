@@ -1,11 +1,11 @@
+import datetime
 import logging
-import os
 from typing import Any
-
+from typing import Tuple, Dict
 
 import redis
 from dotenv import load_dotenv
-
+from config import settings
 
 log = logging.getLogger(__name__)
 
@@ -16,24 +16,24 @@ class State:
     """Класс для работы с состояниями."""
 
     def __init__(self) -> None:
-        self.storage = redis.Redis(host=os.getenv("REDIS_HOST"),
-                                   port=os.getenv("REDIS_PORT"))
-        print(self.storage.scan())
+        self.storage = redis.Redis(host=settings.redis_host,
+                                   port=settings.redis_port)
+        print(self.storage.keys())
 
-    def empty_storage(self):
+    def empty_storage(self) -> None:
         self.storage.flushdb()
 
-    def set_state(self, key, value: Any) -> None:
+    def set_state(self, key, value: Any):
         """Установить состояние для определённого ключа."""
         return self.storage.set(key, f"{value}")
 
-    def get_state(self, key) -> Any:
+    def get_state(self, key: Any) -> Any:
         if self.storage.get("person_last_date") is None:
-            self.storage.set("person_last_date", "01-01-0001")
+            self.storage.set("person_last_date", str(datetime.datetime.min))
         if self.storage.get("movies_last_date") is None:
-            self.storage.set("movies_last_date", "01-01-0001")
+            self.storage.set("movies_last_date", str(datetime.datetime.min))
         if self.storage.get("genre_last_date") is None:
-            self.storage.set("genre_last_date", "01-01-0001")
+            self.storage.set("genre_last_date", str(datetime.datetime.min))
         """Получить состояние по определённому ключу."""
         return self.storage.get(key).decode("utf-8")
 
@@ -54,7 +54,6 @@ class Pg_Extractor:
                 )
                 if ids == ():
                     return []
-                # last_date = mod[-1]
                 self.state.set_state("movies_last_date", mod[-1])
                 return self.film_information(ids=ids)
 
@@ -80,7 +79,7 @@ class Pg_Extractor:
                 film_ids = self.film_ids(table=table, ids=ids)
                 return self.film_information(ids=film_ids)
 
-    def person_ids(self, table, state):
+    def person_ids(self, table: str, state: int) -> Tuple:
         list_id = []
         list_mod = []
 
@@ -102,7 +101,7 @@ class Pg_Extractor:
 
         return list_id, list_mod
 
-    def film_ids(self, table, ids):
+    def film_ids(self, table: str, ids: Tuple) -> Tuple:
         list_id = []
         list_mod = []
 
@@ -124,7 +123,7 @@ class Pg_Extractor:
         list_id = tuple(list_id)
         return list_id
 
-    def film_information(self, ids):
+    def film_information(self, ids: Tuple) -> Dict:
 
         self.curs_pg.execute(
             "SELECT "

@@ -1,3 +1,4 @@
+annotated-types==0.7.0
 asgiref==3.8.1
 async-timeout==4.0.3
 black==24.8.0
@@ -7,6 +8,7 @@ Django==4.2.11
 elastic-transport==8.15.0
 elasticsearch==8.14.0
 flake8==6.1.0
+isort==5.13.2
 mccabe==0.7.0
 mypy-extensions==1.0.0
 packaging==24.1
@@ -17,6 +19,9 @@ psycopg-binary==3.1.18
 psycopg-pool==3.2.2
 psycopg2-binary==2.9.9
 pycodestyle==2.11.1
+pydantic==2.8.2
+pydantic-settings==2.4.0
+pydantic_core==2.20.1
 pyflakes==3.1.0
 python-dotenv==1.0.1
 redis==5.0.8
